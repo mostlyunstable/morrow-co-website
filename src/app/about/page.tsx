@@ -1,5 +1,14 @@
+import type { Metadata } from "next";
 import { HalftoneCanvas } from "@/components/halftone-canvas";
 import { RollButton } from "@/components/roll-button";
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildMetadata({
+  title: "About — Problem-First Automation & Software Studio",
+  description:
+    "Learn how Morrow & Co. partners with founders and operations teams across India and global timezones with fixed milestones and 100% IP ownership.",
+  path: "/about",
+});
 
 const PRINCIPLES = [
   {

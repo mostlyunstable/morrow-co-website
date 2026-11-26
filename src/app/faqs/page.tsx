@@ -1,9 +1,36 @@
+import type { Metadata } from "next";
 import { FaqAccordion } from "@/components/faq-accordion";
 import { RollButton } from "@/components/roll-button";
+import { FAQS } from "@/data/agency";
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildMetadata({
+  title: "FAQs — Timelines, INR & USD Billing, and Code Ownership",
+  description:
+    "Answers on Morrow & Co. delivery timelines, Indian (INR/UPI/GST) and international (USD/Stripe) billing, Razorpay/WhatsApp/Zoho integrations, and IP ownership.",
+  path: "/faqs",
+});
+
+const FAQ_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQS.map((item) => ({
+    "@type": "Question",
+    name: item.q,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: item.a,
+    },
+  })),
+};
 
 export default function FaqsPage() {
   return (
     <div className="bg-[#f7f8fa] pt-28 text-black sm:pt-36">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }}
+      />
       <section className="px-5 pb-24 sm:px-8 sm:pb-32">
         <div className="mx-auto max-w-4xl">
           <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#2563eb]">

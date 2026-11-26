@@ -1,5 +1,14 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import { OnboardingWizard } from "@/components/onboarding-wizard";
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildMetadata({
+  title: "Start a Project — Scope Your Automation or Software Build",
+  description:
+    "Tell Morrow & Co. what needs automating or building. Get a concrete architecture plan, milestone timeline, and estimate in INR or USD within 24 hours.",
+  path: "/onboarding",
+});
 
 export default function OnboardingPage() {
   return (

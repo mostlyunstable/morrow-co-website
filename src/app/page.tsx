@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { BrandMark } from "@/components/brand-mark";
 import { HalftoneCanvas } from "@/components/halftone-canvas";
 import { RollButton } from "@/components/roll-button";
@@ -5,6 +6,14 @@ import { ToolMarquee } from "@/components/tool-marquee";
 import { ScrollManifesto } from "@/components/scroll-manifesto";
 import { ServiceTimeline } from "@/components/service-timeline";
 import { ENGAGEMENT_PRINCIPLES } from "@/data/agency";
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildMetadata({
+  title: "Morrow & Co. | Workflow Automation, Web Products & Custom SaaS",
+  description:
+    "Morrow & Co. turns repetitive operations into AI workflows, custom SaaS apps, and web products for startups and businesses in India and worldwide.",
+  path: "/",
+});
 
 export default function HomePage() {
   return (
