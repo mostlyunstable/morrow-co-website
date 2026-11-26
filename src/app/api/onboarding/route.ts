@@ -9,21 +9,34 @@ interface OnboardingPayload {
   name?: string;
   email?: string;
   company?: string;
+  websiteTrap?: string;
 }
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as OnboardingPayload;
 
-    const name = body.name?.trim() ?? "";
-    const email = body.email?.trim() ?? "";
-    const problem = body.problem?.trim() ?? "";
+    // Silent honeypot check to drop automated spam
+    if (body.websiteTrap && body.websiteTrap.trim().length > 0) {
+      return NextResponse.json({
+        ok: true,
+        ticketId: "MC-00000",
+        receivedAt: new Date().toISOString(),
+      });
+    }
 
-    if (!name || !email || !email.includes("@") || problem.length < 10) {
+    const name = (body.name ?? "").trim().slice(0, 120);
+    const email = (body.email ?? "").trim().slice(0, 180);
+    const problem = (body.problem ?? "").trim().slice(0, 4000);
+    const company = (body.company ?? "").trim().slice(0, 160);
+
+    if (!name || !EMAIL_RE.test(email) || problem.length < 10) {
       return NextResponse.json(
         {
           error:
-            "Please provide your name, a valid email address, and a brief description of your problem or project.",
+            "Please enter your name, a valid work email, and at least a short sentence describing the problem or build.",
         },
         { status: 400 }
       );
@@ -45,7 +58,7 @@ export async function POST(request: Request) {
         timeline: body.timeline || "Flexible",
         name,
         email,
-        company: body.company?.trim() || "Independent",
+        company: company || "Independent",
       },
     });
   } catch {

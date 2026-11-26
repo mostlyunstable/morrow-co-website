@@ -3,8 +3,8 @@ import { OnboardingWizard } from "@/components/onboarding-wizard";
 
 export default function OnboardingPage() {
   return (
-    <div className="bg-grid-dark min-h-[85vh] border-b border-white/10 px-5 pb-24 pt-32 text-white sm:px-8 sm:pt-40">
-      <div className="mx-auto grid max-w-[1160px] items-start gap-12 lg:grid-cols-12 lg:gap-16">
+    <div className="bg-grid-dark min-h-[85svh] border-b border-white/10 px-5 pb-20 pt-28 text-white sm:px-8 sm:pb-24 sm:pt-40">
+      <div className="mx-auto grid max-w-[1160px] items-start gap-10 lg:grid-cols-12 lg:gap-16">
         {/* Left Lead Column */}
         <div className="lg:col-span-5 lg:pt-8">
           <h1 className="text-[clamp(2.8rem,5.5vw,4.35rem)] font-medium leading-[1.02] tracking-[-0.045em] text-white">

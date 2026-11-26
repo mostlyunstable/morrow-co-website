@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Blocks, Code2, Cpu, Globe2 } from "lucide-react";
 import { SERVICES, type ServiceSlug } from "@/data/agency";
 import { useCurrency } from "@/context/currency-context";
@@ -18,12 +18,13 @@ const SERVICE_ICONS: Record<ServiceSlug, typeof Cpu> = {
 export function ServiceTimeline() {
   const { currency } = useCurrency();
   const trackRef = useRef<HTMLDivElement | null>(null);
-  const [lineProgress, setLineProgress] = useState(0.14);
-  const [visibleCards, setVisibleCards] = useState<Record<string, boolean>>({});
+  const lineFillRef = useRef<HTMLDivElement | null>(null);
+  const lineKnobRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     let rafId = 0;
 
+    // Direct DOM updates on scroll avoid re-rendering timeline cards at 60-120fps
     const updateProgress = () => {
       const el = trackRef.current;
       if (!el) return;
@@ -31,7 +32,9 @@ export function ServiceTimeline() {
       const vh = window.innerHeight || 900;
       const start = vh * 0.55;
       const raw = (start - rect.top) / Math.max(1, rect.height - 140);
-      setLineProgress(Math.max(0.05, Math.min(1, raw)));
+      const pct = `${Math.max(0.05, Math.min(1, raw)) * 100}%`;
+      if (lineFillRef.current) lineFillRef.current.style.height = pct;
+      if (lineKnobRef.current) lineKnobRef.current.style.top = pct;
     };
 
     const onScroll = () => {
@@ -41,19 +44,20 @@ export function ServiceTimeline() {
 
     updateProgress();
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    window.addEventListener("resize", onScroll, { passive: true });
 
     const cardEls = document.querySelectorAll<HTMLElement>("[data-tl-card]");
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          const id = entry.target.getAttribute("data-tl-card");
-          if (id && entry.isIntersecting) {
-            setVisibleCards((prev) => ({ ...prev, [id]: true }));
+          if (entry.isIntersecting) {
+            entry.target.classList.remove("translate-y-6", "opacity-35");
+            entry.target.classList.add("translate-y-0", "opacity-100");
+            observer.unobserve(entry.target);
           }
         });
       },
-      { threshold: 0.14 }
+      { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
     );
 
     cardEls.forEach((el) => observer.observe(el));
@@ -86,12 +90,14 @@ export function ServiceTimeline() {
           >
             <div className="timeline-spine h-full w-full" />
             <div
-              className="absolute left-0 top-0 w-full bg-gradient-to-b from-[#4483e8] to-[#93c5fd] transition-[height] duration-150"
-              style={{ height: `${lineProgress * 100}%` }}
+              ref={lineFillRef}
+              className="absolute left-0 top-0 w-full bg-gradient-to-b from-[#4483e8] to-[#93c5fd]"
+              style={{ height: "14%" }}
             />
             <div
-              className="absolute left-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-[1px] bg-white shadow-[0_0_12px_rgba(255,255,255,0.75)] transition-[top] duration-150"
-              style={{ top: `${lineProgress * 100}%` }}
+              ref={lineKnobRef}
+              className="absolute left-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-[1px] bg-white shadow-[0_0_12px_rgba(255,255,255,0.75)]"
+              style={{ top: "14%" }}
             />
           </div>
 
@@ -99,19 +105,14 @@ export function ServiceTimeline() {
             {SERVICES.map((service, idx) => {
               const Icon = SERVICE_ICONS[service.slug];
               const isRight = idx % 2 === 0;
-              const isVisible = visibleCards[service.slug];
 
               return (
                 <div
                   key={service.slug}
                   data-tl-card={service.slug}
-                  className={`grid items-center gap-8 lg:grid-cols-2 lg:gap-14 ${
-                    isVisible
-                      ? "translate-y-0 opacity-100"
-                      : "translate-y-8 opacity-25"
-                  } transition-all duration-700 ease-out`}
+                  className="grid translate-y-6 items-center gap-8 opacity-35 transition-all duration-700 ease-out lg:grid-cols-2 lg:gap-14"
                 >
-                  {/* Opposite spacer column matching Eclipse negative space */}
+                  {/* Opposite spacer column */}
                   <div
                     className={`hidden lg:block ${
                       isRight ? "lg:order-1" : "lg:order-2"
@@ -120,7 +121,7 @@ export function ServiceTimeline() {
 
                   {/* Card column */}
                   <div className={isRight ? "lg:order-2" : "lg:order-1"}>
-                    <article className="group relative overflow-hidden rounded-[2px] border border-white/12 bg-[#040405] p-6 sm:p-8">
+                    <article className="group relative overflow-hidden rounded-[2px] border border-white/12 bg-[#040405] p-5 sm:p-7 lg:p-8">
                       {/* Halftone artwork on right side */}
                       <div className="pointer-events-none absolute inset-0 opacity-85">
                         <HalftoneCanvas
@@ -142,27 +143,27 @@ export function ServiceTimeline() {
                         </div>
 
                         {/* Crisp 2-3 line problem/solution headline */}
-                        <h3 className="mt-5 max-w-md text-[21px] font-normal leading-[1.32] tracking-[-0.02em] text-white sm:text-[23px]">
+                        <h3 className="mt-4 max-w-md text-[19px] font-normal leading-[1.34] tracking-[-0.02em] text-white sm:mt-5 sm:text-[23px]">
                           {service.tagline}
                         </h3>
 
                         {/* 4 hairline rows with blue dots */}
-                        <ul className="mt-7 divide-y divide-white/10 border-t border-white/10">
+                        <ul className="mt-6 divide-y divide-white/10 border-t border-white/10 sm:mt-7">
                           {service.deliverables.map((item) => (
                             <li
                               key={item}
-                              className="flex items-center gap-3 py-3.5 text-[13.5px] text-zinc-300"
+                              className="flex items-start gap-3 py-3 text-[13.5px] leading-snug text-zinc-300 sm:items-center sm:py-3.5"
                             >
                               <span
                                 aria-hidden="true"
-                                className="h-1 w-1 shrink-0 rounded-full bg-[#4483e8]"
+                                className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-[#4483e8] sm:mt-0"
                               />
                               <span>{item}</span>
                             </li>
                           ))}
                         </ul>
 
-                        {/* Bottom bar: circular icon + pricing anchor + sharp rectangular button */}
+                        {/* Bottom bar */}
                         <div className="mt-4 flex flex-wrap items-center justify-between gap-4 border-t border-white/12 pt-5">
                           <div className="flex items-center gap-3.5">
                             <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/12 bg-white/[0.04] text-[#60a5fa]">

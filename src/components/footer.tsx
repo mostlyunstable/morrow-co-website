@@ -25,11 +25,11 @@ export function Footer() {
         <HalftoneCanvas variant="footer" dotColor="#ffffff" />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-[1320px] px-5 pb-8 pt-20 sm:px-10 sm:pt-28">
-        <div className="grid gap-14 lg:grid-cols-12">
+      <div className="relative z-10 mx-auto max-w-[1320px] px-5 pb-[max(2rem,env(safe-area-inset-bottom))] pt-16 sm:px-10 sm:pt-28">
+        <div className="grid gap-12 lg:grid-cols-12 lg:gap-14">
           {/* Left CTA block */}
           <div className="lg:col-span-6">
-            <p className="max-w-sm text-[22px] font-normal leading-[1.35] tracking-[-0.02em] text-zinc-200 sm:text-[26px]">
+            <p className="max-w-sm text-[20px] font-normal leading-[1.35] tracking-[-0.02em] text-zinc-200 sm:text-[26px]">
               Good software is complicated. Reaching us isn&apos;t. Talk to the
               Morrow &amp; Co. team anytime.
             </p>
@@ -41,7 +41,7 @@ export function Footer() {
           </div>
 
           {/* Right bordered link columns */}
-          <div className="grid grid-cols-2 gap-8 lg:col-span-6">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:col-span-6">
             <div>
               <p className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-zinc-500">
                 SERVICES
@@ -117,23 +117,23 @@ export function Footer() {
         </div>
 
         {/* Clean studio wordmark */}
-        <div className="mt-24 flex items-center gap-4 sm:mt-32">
+        <div className="mt-16 flex items-center gap-3.5 sm:mt-28 sm:gap-4">
           <BrandMark
-            className="h-10 w-10 shrink-0 sm:h-11 sm:w-11"
+            className="h-9 w-9 shrink-0 sm:h-11 sm:w-11"
             color="#4483E8"
           />
-          <span className="text-[clamp(2rem,4vw,3.1rem)] font-medium tracking-[-0.03em] text-white">
+          <span className="text-[clamp(1.85rem,4vw,3.1rem)] font-medium tracking-[-0.03em] text-white">
             Morrow &amp; Co.
           </span>
         </div>
 
         {/* Bottom legal & email bar */}
-        <div className="mt-10 flex flex-col items-start justify-between gap-3 border-t border-white/12 pt-5 font-mono text-[11px] uppercase tracking-[0.12em] text-zinc-500 sm:flex-row sm:items-center">
+        <div className="mt-8 flex flex-col items-start justify-between gap-3 border-t border-white/12 pt-5 font-mono text-[11px] uppercase tracking-[0.12em] text-zinc-500 sm:mt-10 sm:flex-row sm:items-center">
           <p>© 2026 MORROW &amp; CO. — SYSTEMS, NOT BUSYWORK.</p>
           <button
             type="button"
             onClick={handleCopyEmail}
-            className={`font-mono text-[11px] lowercase tracking-wide transition-colors ${
+            className={`min-h-[36px] py-1 font-mono text-[11px] lowercase tracking-wide transition-colors ${
               copied ? "text-[#60a5fa]" : "text-zinc-300 hover:text-white"
             }`}
           >

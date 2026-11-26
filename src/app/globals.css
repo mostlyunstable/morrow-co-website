@@ -19,11 +19,19 @@ html {
   background: #000000;
   color: #ffffff;
   scroll-behavior: auto;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   font-family: var(--font-sans);
   overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a,
+[role="button"] {
+  touch-action: manipulation;
 }
 
 /* Character-roll micro-interaction on rectangular buttons */
@@ -61,11 +69,6 @@ body {
   display: block;
 }
 
-.roll:hover .roll__ch,
-.roll:focus-visible .roll__ch {
-  transform: translateY(-108%);
-}
-
 /* Character-shuffle nav links */
 .shuffle-link {
   display: inline-flex;
@@ -83,9 +86,16 @@ body {
   transition-delay: calc(var(--i, 0) * 14ms);
 }
 
-.shuffle-link:hover .shuffle-link__ch {
-  transform: translateY(-1px);
-  color: #ffffff;
+@media (hover: hover) and (pointer: fine) {
+  .roll:hover .roll__ch,
+  .roll:focus-visible .roll__ch {
+    transform: translateY(-108%);
+  }
+
+  .shuffle-link:hover .shuffle-link__ch {
+    transform: translateY(-1px);
+    color: #ffffff;
+  }
 }
 
 /* Infinite tool marquee */

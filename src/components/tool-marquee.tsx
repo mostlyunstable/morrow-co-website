@@ -50,16 +50,16 @@ export function ToolMarquee() {
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-20 bg-gradient-to-r from-white to-transparent sm:w-36" />
         <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-20 bg-gradient-to-l from-white to-transparent sm:w-36" />
 
-        <div className="marquee-track flex items-center gap-12 sm:gap-16">
+        <div className="marquee-track flex items-center gap-8 sm:gap-12 lg:gap-16">
           {items.map((tool, idx) => {
             const Icon = TOOL_ICONS[idx % TOOL_ICONS.length];
             return (
               <div
                 key={`${tool}-${idx}`}
-                className="flex items-center gap-2.5 text-zinc-400"
+                className="flex items-center gap-2 text-zinc-400 sm:gap-2.5"
               >
-                <Icon className="h-[18px] w-[18px] shrink-0 text-zinc-400" />
-                <span className="text-[17px] font-semibold tracking-[-0.02em] text-zinc-400">
+                <Icon className="h-[16px] w-[16px] shrink-0 text-zinc-400 sm:h-[18px] sm:w-[18px]" />
+                <span className="text-[15px] font-semibold tracking-[-0.02em] text-zinc-400 sm:text-[17px]">
                   {tool}
                 </span>
               </div>

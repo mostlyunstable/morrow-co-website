@@ -12,7 +12,7 @@ export default function HomePage() {
       {/* 1. HERO — Full-bleed tight halftone dot matrix + Instrument Serif */}
       <section
         id="top"
-        className="relative flex min-h-screen items-center justify-center overflow-hidden bg-black px-5 pb-24 pt-24 sm:px-8"
+        className="relative flex min-h-[100svh] items-center justify-center overflow-hidden bg-black px-5 pb-20 pt-24 sm:px-8 sm:pb-24"
       >
         <div className="pointer-events-none absolute inset-0">
           <HalftoneCanvas variant="hero" />
@@ -23,13 +23,13 @@ export default function HomePage() {
         />
 
         <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center text-center">
-          <h1 className="font-serif text-[clamp(3.35rem,8.4vw,6.4rem)] font-normal leading-[0.94] tracking-[-0.025em] text-white">
+          <h1 className="font-serif text-[clamp(2.8rem,8.4vw,6.4rem)] font-normal leading-[0.95] tracking-[-0.025em] text-white">
             Automate the
             <br />
             <span className="italic">busywork</span>
           </h1>
 
-          <p className="mt-6 max-w-md text-[15.5px] leading-relaxed text-zinc-300 sm:text-[16.5px]">
+          <p className="mt-5 max-w-md text-[15px] leading-relaxed text-zinc-300 sm:mt-6 sm:text-[16.5px]">
             Morrow &amp; Co. turns repetitive operations into{" "}
             <strong className="font-semibold text-white">AI workflows</strong>,{" "}
             <strong className="font-semibold text-white">SaaS apps</strong>, and{" "}
@@ -37,7 +37,7 @@ export default function HomePage() {
             built for India and the world.
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <div className="mt-7 flex w-full max-w-xs flex-col items-stretch justify-center gap-3 sm:mt-8 sm:max-w-none sm:flex-row sm:items-center">
             <RollButton href="/onboarding" variant="white" size="md">
               Start onboarding
             </RollButton>
@@ -49,7 +49,7 @@ export default function HomePage() {
       </section>
 
       {/* 2. WHITE OVERLAP SHEET: TOOL MARQUEE + SCROLL MANIFESTO */}
-      <section className="relative z-20 -mt-10 rounded-t-[24px] bg-white px-5 pt-4 text-black sm:-mt-14 sm:rounded-t-[32px] sm:px-8 sm:pt-6">
+      <section className="relative z-20 -mt-8 rounded-t-[20px] bg-white px-5 pt-4 text-black sm:-mt-14 sm:rounded-t-[32px] sm:px-8 sm:pt-6">
         <div
           aria-hidden="true"
           className="mx-auto mb-8 h-1 w-10 rounded-full bg-black/15"
@@ -93,11 +93,11 @@ export default function HomePage() {
             </h2>
           </div>
 
-          <div className="mt-14 grid gap-6 md:grid-cols-3">
+          <div className="mt-10 grid gap-4 sm:mt-14 md:grid-cols-3 lg:gap-6">
             {ENGAGEMENT_PRINCIPLES.map((item) => (
               <div
                 key={item.index}
-                className="flex flex-col justify-between rounded-[2px] border border-black/[0.06] bg-white p-8 shadow-[0_8px_24px_rgba(0,0,0,0.03)]"
+                className="flex flex-col justify-between rounded-[2px] border border-black/[0.06] bg-white p-6 shadow-[0_8px_24px_rgba(0,0,0,0.03)] lg:p-8"
               >
                 <div>
                   <span className="font-mono text-xs tracking-[0.16em] text-zinc-400">

@@ -49,15 +49,21 @@ export default function ServicesPage() {
             </div>
           </div>
 
-          {/* 4-column connected chain strip */}
-          <div className="mt-14 grid border border-white/12 bg-[#050507] md:grid-cols-4 md:divide-x md:divide-white/12">
-            {SERVICES.map((service) => {
+          {/* 4-column connected chain strip (1-col mobile, 2x2 tablet, 4-col desktop) */}
+          <div className="mt-10 grid grid-cols-1 border border-white/12 bg-[#050507] sm:mt-14 sm:grid-cols-2 lg:grid-cols-4">
+            {SERVICES.map((service, idx) => {
               const Icon = SERVICE_ICONS[service.slug];
+              const borderClasses = [
+                idx < 3 ? "border-b lg:border-b-0" : "",
+                idx < 2 ? "sm:border-b lg:border-b-0" : "sm:border-b-0",
+                idx % 2 === 0 ? "sm:border-r" : "",
+                idx < 3 ? "lg:border-r" : "lg:border-r-0",
+              ].join(" ");
               return (
                 <a
                   key={service.slug}
                   href={`#${service.slug}`}
-                  className="group relative flex flex-col justify-between border-b border-white/12 p-6 transition-colors hover:bg-white/[0.03] md:border-b-0"
+                  className={`group relative flex flex-col justify-between border-white/12 p-5 transition-colors hover:bg-white/[0.03] sm:p-6 ${borderClasses}`}
                 >
                   <div>
                     <div className="flex items-center justify-between">
@@ -224,11 +230,11 @@ export default function ServicesPage() {
           <section
             key={service.slug}
             id={service.slug}
-            className={`scroll-mt-20 px-5 py-24 sm:px-8 sm:py-28 ${
+            className={`scroll-mt-20 px-5 py-16 sm:px-8 sm:py-24 lg:py-28 ${
               isLight ? "bg-white text-black" : "bg-black text-white"
             }`}
           >
-            <div className="mx-auto grid max-w-[1160px] items-start gap-12 lg:grid-cols-2 lg:gap-20">
+            <div className="mx-auto grid max-w-[1160px] items-start gap-10 lg:grid-cols-2 lg:gap-20">
               {leftSummary}
               {rightDetails}
             </div>
@@ -262,23 +268,25 @@ export default function ServicesPage() {
               {DIAGNOSTIC_ROUTES.map((row) => (
                 <div
                   key={row.pain}
-                  className="grid items-center gap-3 py-5 md:grid-cols-12 md:gap-4"
+                  className="flex flex-col gap-3 py-5 md:grid md:grid-cols-12 md:items-center md:gap-4"
                 >
                   <p className="text-[14.5px] leading-snug text-zinc-200 md:col-span-6">
                     {row.pain}
                   </p>
-                  <div className="md:col-span-3">
-                    <Link
-                      href={`/onboarding?service=${row.slug}`}
-                      className="inline-flex items-center gap-1.5 text-[14px] font-medium text-[#60a5fa] transition-colors hover:text-white"
-                    >
-                      <span>{row.serviceTitle}</span>
-                      <ArrowUpRight className="h-3.5 w-3.5" />
-                    </Link>
+                  <div className="flex flex-wrap items-center justify-between gap-3 md:col-span-6 md:grid md:grid-cols-6 md:items-center">
+                    <div className="md:col-span-3">
+                      <Link
+                        href={`/onboarding?service=${row.slug}`}
+                        className="inline-flex min-h-[36px] items-center gap-1.5 text-[14px] font-medium text-[#60a5fa] transition-colors hover:text-white"
+                      >
+                        <span>{row.serviceTitle}</span>
+                        <ArrowUpRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+                    <p className="font-mono text-[12.5px] text-zinc-400 md:col-span-3 md:text-right">
+                      {row.step[currency]}
+                    </p>
                   </div>
-                  <p className="font-mono text-[12.5px] text-zinc-400 md:col-span-3 md:text-right">
-                    {row.step[currency]}
-                  </p>
                 </div>
               ))}
             </div>

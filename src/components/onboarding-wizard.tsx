@@ -76,6 +76,30 @@ function CustomSelect({
 
   const selected = options.find((o) => o.value === value);
 
+  const handleTriggerKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    const idx = Math.max(
+      0,
+      options.findIndex((o) => o.value === value)
+    );
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (!open) {
+        setOpen(true);
+      } else {
+        const next = options[(idx + 1) % options.length];
+        if (next) onChange(next.value);
+      }
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (!open) {
+        setOpen(true);
+      } else {
+        const prev = options[(idx - 1 + options.length) % options.length];
+        if (prev) onChange(prev.value);
+      }
+    }
+  };
+
   return (
     <div ref={rootRef} className="relative">
       <label
@@ -89,14 +113,15 @@ function CustomSelect({
         type="button"
         aria-haspopup="listbox"
         aria-expanded={open}
+        onKeyDown={handleTriggerKeyDown}
         onClick={() => setOpen((prev) => !prev)}
-        className={`mt-2 flex w-full items-center justify-between rounded-[2px] border bg-[#0b0d11] px-3.5 py-2.5 text-left text-[13.5px] transition-colors ${
+        className={`mt-2 flex min-h-[44px] w-full items-center justify-between gap-2 rounded-[2px] border bg-[#0b0d11] px-3.5 py-2.5 text-left text-[16px] transition-colors sm:text-[13.5px] ${
           open
             ? "border-[#4483e8] text-white"
             : "border-white/14 text-zinc-200 hover:border-white/30"
         }`}
       >
-        <span className={selected ? "text-white" : "text-zinc-500"}>
+        <span className={`truncate ${selected ? "text-white" : "text-zinc-500"}`}>
           {selected ? selected.label : placeholder}
         </span>
         <ChevronDown
@@ -140,18 +165,27 @@ function CustomSelect({
 
 export function OnboardingWizard() {
   const searchParams = useSearchParams();
-  const { currency } = useCurrency();
-
   const initialService = searchParams.get("service") as ServiceSlug | null;
   const validInitial = SERVICES.some((s) => s.slug === initialService)
     ? (initialService as ServiceSlug)
     : "automation";
 
+  return <OnboardingWizardForm key={validInitial} initialService={validInitial} />;
+}
+
+function OnboardingWizardForm({
+  initialService,
+}: {
+  initialService: ServiceSlug;
+}) {
+  const { currency } = useCurrency();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
   const [website, setWebsite] = useState("");
-  const [service, setService] = useState<string>(validInitial);
+  const [websiteTrap, setWebsiteTrap] = useState("");
+  const [service, setService] = useState<string>(initialService);
   const [timeline, setTimeline] = useState<string>("1-month");
   const [budgetIndex, setBudgetIndex] = useState<number>(1);
   const [problem, setProblem] = useState("");
@@ -183,6 +217,7 @@ export function OnboardingWizard() {
           name,
           email,
           company: company || website,
+          websiteTrap,
         }),
       });
       const data = await res.json();
@@ -270,7 +305,7 @@ export function OnboardingWizard() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Your name"
-            className="mt-2 w-full rounded-[2px] border border-white/14 bg-[#0b0d11] px-3.5 py-2.5 text-[13.5px] text-white placeholder:text-zinc-600 focus:border-[#4483e8] focus:outline-none"
+            className="mt-2 min-h-[44px] w-full rounded-[2px] border border-white/14 bg-[#0b0d11] px-3.5 py-2.5 text-[16px] text-white placeholder:text-zinc-600 focus:border-[#4483e8] focus:outline-none sm:text-[13.5px]"
           />
         </div>
 
@@ -288,7 +323,7 @@ export function OnboardingWizard() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@company.com"
-            className="mt-2 w-full rounded-[2px] border border-white/14 bg-[#0b0d11] px-3.5 py-2.5 text-[13.5px] text-white placeholder:text-zinc-600 focus:border-[#4483e8] focus:outline-none"
+            className="mt-2 min-h-[44px] w-full rounded-[2px] border border-white/14 bg-[#0b0d11] px-3.5 py-2.5 text-[16px] text-white placeholder:text-zinc-600 focus:border-[#4483e8] focus:outline-none sm:text-[13.5px]"
           />
         </div>
       </div>
@@ -308,7 +343,7 @@ export function OnboardingWizard() {
             value={company}
             onChange={(e) => setCompany(e.target.value)}
             placeholder="Company · Bengaluru / NYC"
-            className="mt-2 w-full rounded-[2px] border border-white/14 bg-[#0b0d11] px-3.5 py-2.5 text-[13.5px] text-white placeholder:text-zinc-600 focus:border-[#4483e8] focus:outline-none"
+            className="mt-2 min-h-[44px] w-full rounded-[2px] border border-white/14 bg-[#0b0d11] px-3.5 py-2.5 text-[16px] text-white placeholder:text-zinc-600 focus:border-[#4483e8] focus:outline-none sm:text-[13.5px]"
           />
         </div>
 
@@ -325,13 +360,13 @@ export function OnboardingWizard() {
             value={website}
             onChange={(e) => setWebsite(e.target.value)}
             placeholder="https://company.com"
-            className="mt-2 w-full rounded-[2px] border border-white/14 bg-[#0b0d11] px-3.5 py-2.5 text-[13.5px] text-white placeholder:text-zinc-600 focus:border-[#4483e8] focus:outline-none"
+            className="mt-2 min-h-[44px] w-full rounded-[2px] border border-white/14 bg-[#0b0d11] px-3.5 py-2.5 text-[16px] text-white placeholder:text-zinc-600 focus:border-[#4483e8] focus:outline-none sm:text-[13.5px]"
           />
         </div>
       </div>
 
-      {/* Row 3: Custom Sharp Dropdowns */}
-      <div className="mt-4 grid gap-4 sm:grid-cols-3">
+      {/* Row 3: Custom Sharp Dropdowns (even 2-col alignment) */}
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <CustomSelect
           id="buildType"
           label="BUILD TYPE"
@@ -349,21 +384,32 @@ export function OnboardingWizard() {
           value={timeline}
           onChange={setTimeline}
         />
-
-        <CustomSelect
-          id="budget"
-          label={`BUDGET (${currency})`}
-          placeholder="Select range"
-          options={budgetList}
-          value={selectedBudget.value}
-          onChange={(val) => {
-            const idx = budgetList.findIndex((b) => b.value === val);
-            if (idx >= 0) setBudgetIndex(idx);
-          }}
-        />
       </div>
 
-      {/* Row 4: Problem statement */}
+      {/* Row 4: Target Budget (2-col mobile, 4-col tablet/desktop) */}
+      <div className="mt-4">
+        <span className="block font-mono text-[10.5px] uppercase tracking-[0.14em] text-zinc-400">
+          TARGET BUDGET ({currency})
+        </span>
+        <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {budgetList.map((b, idx) => (
+            <button
+              key={b.value}
+              type="button"
+              onClick={() => setBudgetIndex(idx)}
+              className={`min-h-[42px] rounded-[2px] border px-2.5 py-2 font-mono text-[11.5px] transition-colors ${
+                budgetIndex === idx
+                  ? "border-[#4483e8] bg-[#4483e8]/18 text-[#93c5fd]"
+                  : "border-white/14 bg-[#0b0d11] text-zinc-400 hover:border-white/30 hover:text-white"
+              }`}
+            >
+              {b.value}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Row 5: Problem statement */}
       <div className="mt-4">
         <label
           htmlFor="problem"
@@ -378,15 +424,31 @@ export function OnboardingWizard() {
           value={problem}
           onChange={(e) => setProblem(e.target.value)}
           placeholder="Example: our ops team copies every order from WhatsApp & sheets into Zoho each morning—or we need a custom SaaS portal for our clients."
-          className="mt-2 w-full rounded-[2px] border border-white/14 bg-[#0b0d11] px-3.5 py-3 text-[13.5px] leading-relaxed text-white placeholder:text-zinc-600 focus:border-[#4483e8] focus:outline-none"
+          className="mt-2 w-full rounded-[2px] border border-white/14 bg-[#0b0d11] px-3.5 py-3 text-[16px] leading-relaxed text-white placeholder:text-zinc-600 focus:border-[#4483e8] focus:outline-none sm:text-[13.5px]"
         />
       </div>
 
       {error && (
-        <p className="mt-4 rounded-[2px] border border-red-500/35 bg-red-500/10 px-3.5 py-2.5 text-xs text-red-300">
+        <p
+          role="alert"
+          aria-live="polite"
+          className="mt-4 rounded-[2px] border border-red-500/35 bg-red-500/10 px-3.5 py-2.5 text-xs text-red-300"
+        >
           {error}
         </p>
       )}
+
+      {/* Hidden honeypot for automated spam */}
+      <input
+        type="text"
+        name="websiteTrap"
+        tabIndex={-1}
+        autoComplete="off"
+        value={websiteTrap}
+        onChange={(e) => setWebsiteTrap(e.target.value)}
+        aria-hidden="true"
+        className="hidden"
+      />
 
       {/* Full-width crisp white rectangular submit */}
       <button

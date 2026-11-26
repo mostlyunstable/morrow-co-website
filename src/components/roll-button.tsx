@@ -35,9 +35,9 @@ export function RollButton({
   }[variant];
 
   const sizeStyles = {
-    sm: "px-4 py-2 text-[13px] rounded-[3px]",
-    md: "px-5 py-2.5 text-[13.5px] rounded-[3px]",
-    lg: "px-6 py-3 text-[14px] rounded-[3px]",
+    sm: "min-h-[38px] px-4 py-2 text-[13px] rounded-[3px]",
+    md: "min-h-[42px] px-5 py-2.5 text-[13.5px] rounded-[3px]",
+    lg: "min-h-[46px] px-6 py-3 text-[14px] rounded-[3px]",
   }[size];
 
   const content = (
@@ -58,7 +58,7 @@ export function RollButton({
     </span>
   );
 
-  const classes = `roll font-medium tracking-[-0.01em] transition-colors duration-200 ${variantStyles} ${sizeStyles} ${
+  const classes = `roll font-medium tracking-[-0.01em] transition-[colors,transform] duration-200 active:scale-[0.98] ${variantStyles} ${sizeStyles} ${
     disabled ? "opacity-50 pointer-events-none" : ""
   } ${className}`;
 
