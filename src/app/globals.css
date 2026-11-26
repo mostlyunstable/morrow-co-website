@@ -1,0 +1,140 @@
+@import "tailwindcss";
+
+:root {
+  --bg-obsidian: #000000;
+  --bg-surface: #050507;
+  --bg-light: #ffffff;
+  --bg-light-subtle: #f6f7f9;
+  --accent: #4483e8;
+  --accent-hover: #3472d8;
+}
+
+@theme inline {
+  --font-sans: var(--font-hanken), var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-serif: var(--font-serif), Georgia, serif;
+}
+
+html {
+  background: #000000;
+  color: #ffffff;
+  scroll-behavior: auto;
+}
+
+body {
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Character-roll micro-interaction on rectangular buttons */
+.roll {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.roll__inner {
+  position: relative;
+  display: inline-flex;
+  overflow: hidden;
+  line-height: 1.15;
+}
+
+.roll__track {
+  display: inline-flex;
+}
+
+.roll__ch {
+  position: relative;
+  display: inline-block;
+  transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--i, 0) * 15ms);
+}
+
+.roll__ch::after {
+  content: attr(data-ch);
+  position: absolute;
+  left: 0;
+  top: 108%;
+  display: block;
+}
+
+.roll:hover .roll__ch,
+.roll:focus-visible .roll__ch {
+  transform: translateY(-108%);
+}
+
+/* Character-shuffle nav links */
+.shuffle-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.shuffle-link__text {
+  display: inline-flex;
+}
+
+.shuffle-link__ch {
+  display: inline-block;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), color 0.2s ease;
+  transition-delay: calc(var(--i, 0) * 14ms);
+}
+
+.shuffle-link:hover .shuffle-link__ch {
+  transform: translateY(-1px);
+  color: #ffffff;
+}
+
+/* Infinite tool marquee */
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 36s linear infinite;
+}
+
+.marquee-wrap:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+/* Timeline dotted spine */
+.timeline-spine {
+  background-image: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.35) 1px,
+    transparent 1px
+  );
+  background-size: 2px 10px;
+  background-repeat: repeat-y;
+  background-position: center;
+}
+
+/* Subtle architectural square grid for /services and /onboarding */
+.bg-grid-dark {
+  background-color: #000000;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+  .roll__ch,
+  .shuffle-link__ch {
+    transition: none;
+  }
+}
