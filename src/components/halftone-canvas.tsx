@@ -70,7 +70,6 @@ export function HalftoneCanvas({
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
-    const finePointer = window.matchMedia("(pointer: fine)").matches;
 
     let aborted = false;
     let width = 0;
@@ -87,7 +86,6 @@ export function HalftoneCanvas({
     const startTime = performance.now();
 
     let heroImage: SampledImage | null = null;
-    // Precomputed typed-array buffers eliminate trig/fbm & getImageData math from the 60fps loop
     let staticNoise = new Float32Array(0);
     let heroLuma = new Float32Array(0);
     let bucketCoords: Float32Array[] = BUCKET_ALPHAS.map(
@@ -117,11 +115,12 @@ export function HalftoneCanvas({
             const scale = imgAspect / canvasAspect;
             v = 0.5 + (ny - 0.5) * scale;
           } else {
-            // Keep both left and right hands pointing horizontally toward each other
-            // across desktop, tablet, and smartphone viewports with 1:1 aspect ratio
-            const uSpan = isPortrait ? 0.72 : Math.max(0.76, canvasAspect / imgAspect);
-            const dvPerNy = uSpan * (imgAspect / Math.max(0.25, canvasAspect));
-            const vCenterOffset = isPortrait ? 0.42 : 0.5;
+            // Keep both left and right hands bold and pointing horizontally toward each other
+            // across desktop, tablet, and smartphone viewports
+            const uSpan = isPortrait ? 0.54 : Math.max(0.76, canvasAspect / imgAspect);
+            const dvPerNy =
+              uSpan * (imgAspect / Math.max(0.25, canvasAspect)) * (isPortrait ? 0.78 : 1);
+            const vCenterOffset = isPortrait ? 0.41 : 0.5;
             u = 0.5 + (nx - 0.5) * uSpan;
             v = 0.5 + (ny - vCenterOffset) * dvPerNy;
           }
@@ -152,7 +151,7 @@ export function HalftoneCanvas({
       spacing =
         variant === "hero"
           ? isMobile
-            ? 9
+            ? 8.5
             : isTablet
               ? 8
               : 7
@@ -166,7 +165,7 @@ export function HalftoneCanvas({
       maxRadius =
         variant === "hero"
           ? isMobile
-            ? 3.4
+            ? 3.3
             : 3.15
           : variant === "fade-dark"
             ? 3.4
@@ -276,8 +275,10 @@ export function HalftoneCanvas({
       pointerRef.current.active = false;
     };
 
-    if (variant === "hero" && finePointer) {
+    if (variant === "hero") {
       window.addEventListener("pointermove", handlePointerMove, { passive: true });
+      window.addEventListener("pointerdown", handlePointerMove, { passive: true });
+      window.addEventListener("pointerup", handlePointerLeave, { passive: true });
       window.addEventListener("pointerleave", handlePointerLeave);
     }
 
@@ -301,10 +302,22 @@ export function HalftoneCanvas({
         const scrollFade = 1 - scrollFactor * 0.45;
         const hasHeroLuma = heroLuma.length === cols * rows;
 
+        // Smooth animated reach, vertical float, and inward fingertip pulse across desktop & mobile
+        const reachCols = prefersReducedMotion ? 0 : Math.sin(t * 1.4) * 2.1;
+        const floatRows = prefersReducedMotion ? 0 : Math.cos(t * 1.05) * 1.15;
+        const halfCols = cols * 0.5;
+
         for (let r = 0; r < rows; r++) {
           const ny = r / Math.max(1, rows - 1);
           const y = r * spacing;
           const rowOffset = r * cols;
+
+          const sr = Math.max(0, Math.min(rows - 1.001, r - floatRows));
+          const r0 = Math.floor(sr);
+          const r1 = Math.min(rows - 1, r0 + 1);
+          const fy = sr - r0;
+          const r0Off = r0 * cols;
+          const r1Off = r1 * cols;
 
           for (let c = 0; c < cols; c++) {
             const nx = c / Math.max(1, cols - 1);
@@ -315,19 +328,42 @@ export function HalftoneCanvas({
             let intensity = 0;
 
             if (variant === "hero") {
-              const handDetail = hasHeroLuma ? heroLuma[idx] : 0;
+              let handDetail = 0;
+              if (hasHeroLuma) {
+                // Left hand reaches right (+reachCols), right hand reaches left (-reachCols)
+                const sideDir = c < halfCols ? 1 : -1;
+                const sc = Math.max(
+                  0,
+                  Math.min(cols - 1.001, c - sideDir * reachCols)
+                );
+                const c0 = Math.floor(sc);
+                const c1 = Math.min(cols - 1, c0 + 1);
+                const fx = sc - c0;
+
+                const l00 = heroLuma[r0Off + c0];
+                const l10 = heroLuma[r0Off + c1];
+                const l01 = heroLuma[r1Off + c0];
+                const l11 = heroLuma[r1Off + c1];
+                const top = l00 + (l10 - l00) * fx;
+                const bot = l01 + (l11 - l01) * fx;
+                handDetail = top + (bot - top) * fy;
+              }
+
               const skyBand = Math.max(0.28, Math.abs(ny - 0.48) * 1.65);
-              const ambientMist = n * (isPortraitHero ? 0.36 : 0.72) * skyBand;
-              const wave = 0.9 + 0.1 * Math.sin(nx * 5.5 - t * 0.95 + ny * 2);
+              const ambientMist = n * 0.72 * skyBand;
+              // Energy pulse flowing from both wrists inward toward the reaching fingertips
+              const inwardWave =
+                0.78 +
+                0.24 * Math.sin(Math.abs(nx - 0.5) * 8.5 + t * 2.2 - ny * 1.2);
 
               const centerDist = isPortraitHero
-                ? Math.hypot((nx - 0.5) * 1.35, (ny - 0.45) * 1.35)
+                ? Math.hypot((nx - 0.5) * 1.4, (ny - 0.43) * 1.6)
                 : Math.hypot((nx - 0.5) * 1.55, (ny - 0.48) * 1.85);
-              const centerMask = Math.min(1, (isPortraitHero ? 0.46 : 0.44) + centerDist * 1.05);
+              const centerMask = Math.min(1, 0.46 + centerDist * 1.1);
 
               intensity =
-                Math.max(handDetail, ambientMist) *
-                wave *
+                Math.max(handDetail * 1.12, ambientMist) *
+                inwardWave *
                 centerMask *
                 scrollFade;
 
@@ -423,8 +459,10 @@ export function HalftoneCanvas({
       resizeObserver.disconnect();
       intersectionObserver.disconnect();
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-      if (variant === "hero" && finePointer) {
+      if (variant === "hero") {
         window.removeEventListener("pointermove", handlePointerMove);
+        window.removeEventListener("pointerdown", handlePointerMove);
+        window.removeEventListener("pointerup", handlePointerLeave);
         window.removeEventListener("pointerleave", handlePointerLeave);
       }
     };
