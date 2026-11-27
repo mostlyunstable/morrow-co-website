@@ -102,6 +102,12 @@ export function HalftoneCanvas({
 
       const canvasAspect = width / Math.max(1, height);
       const imgAspect = heroImage.width / Math.max(1, heroImage.height);
+      const isPortrait = canvasAspect < 1.02;
+
+      // For 1:1 anatomical aspect ratio on portrait screens:
+      // dv/dny = uSpan * (imgAspect / canvasAspect)
+      const uSpanPortrait = 0.5;
+      const dvPerNy = uSpanPortrait * (imgAspect / Math.max(0.25, canvasAspect));
 
       for (let r = 0; r < rows; r++) {
         const ny = r / Math.max(1, rows - 1);
@@ -111,17 +117,26 @@ export function HalftoneCanvas({
 
           let u = nx;
           let v = ny;
-          let skip = false;
+          let bandAlpha = 1;
 
-          if (canvasAspect < 1.02) {
-            if (ny < 0.43) {
-              u = nx * 0.56;
-              v = 0.2 + (ny / 0.43) * 0.55;
-            } else if (ny > 0.58) {
-              u = 0.44 + nx * 0.56;
-              v = 0.24 + ((ny - 0.58) / 0.42) * 0.54;
+          if (isPortrait) {
+            // Left hand centered at ny = 0.21 (between navbar and headline)
+            // Right hand centered at ny = 0.79 (between CTA buttons and bottom sheet)
+            if (ny < 0.44) {
+              u = nx * uSpanPortrait;
+              v = 0.49 + (ny - 0.21) * dvPerNy;
+              // Soft feathering near navbar & headline
+              const distFromCenter = Math.abs(ny - 0.21) / 0.17;
+              bandAlpha = Math.max(0, 1 - Math.pow(Math.max(0, distFromCenter - 0.45) / 0.55, 2));
+            } else if (ny > 0.56) {
+              u = (1 - uSpanPortrait) + nx * uSpanPortrait;
+              v = 0.51 + (ny - 0.79) * dvPerNy;
+              // Soft feathering near CTAs & bottom overlap sheet
+              const distFromCenter = Math.abs(ny - 0.79) / 0.17;
+              bandAlpha = Math.max(0, 1 - Math.pow(Math.max(0, distFromCenter - 0.45) / 0.55, 2));
             } else {
-              skip = true;
+              heroLuma[idx] = 0;
+              continue;
             }
           } else {
             if (canvasAspect > imgAspect) {
@@ -133,8 +148,8 @@ export function HalftoneCanvas({
             }
           }
 
-          if (skip) {
-            heroLuma[idx] = 0.06;
+          if (bandAlpha <= 0.02 || v < 0 || v > 1) {
+            heroLuma[idx] = 0;
             continue;
           }
 
@@ -148,7 +163,7 @@ export function HalftoneCanvas({
               0.587 * (heroImage.data[p + 1] ?? 0) +
               0.114 * (heroImage.data[p + 2] ?? 0)) /
             255;
-          heroLuma[idx] = Math.pow(lum, 0.68) * 1.25;
+          heroLuma[idx] = Math.pow(lum, 0.68) * 1.25 * bandAlpha;
         }
       }
     };
@@ -324,13 +339,13 @@ export function HalftoneCanvas({
             if (variant === "hero") {
               const handDetail = hasHeroLuma ? heroLuma[idx] : 0;
               const skyBand = Math.max(0.28, Math.abs(ny - 0.48) * 1.65);
-              const ambientMist = n * (isPortraitHero ? 0.45 : 0.72) * skyBand;
+              const ambientMist = n * (isPortraitHero ? 0.26 : 0.72) * skyBand;
               const wave = 0.9 + 0.1 * Math.sin(nx * 5.5 - t * 0.95 + ny * 2);
 
               const centerDist = isPortraitHero
-                ? Math.abs(ny - 0.5) * 1.9
+                ? Math.abs(ny - 0.5) * 2.15
                 : Math.hypot((nx - 0.5) * 1.55, (ny - 0.48) * 1.85);
-              const centerMask = Math.min(1, 0.44 + centerDist * 1.05);
+              const centerMask = Math.min(1, (isPortraitHero ? 0.25 : 0.44) + centerDist * 1.05);
 
               intensity =
                 Math.max(handDetail, ambientMist) *
