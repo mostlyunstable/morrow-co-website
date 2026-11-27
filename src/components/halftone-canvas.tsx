@@ -139,7 +139,15 @@ export function HalftoneCanvas({
               0.587 * (heroImage.data[p + 1] ?? 0) +
               0.114 * (heroImage.data[p + 2] ?? 0)) /
             255;
-          heroLuma[idx] = Math.pow(lum, 0.68) * 1.25;
+
+          // Recover deeper chiaroscuro shadows on the right hand (u > 0.5)
+          // so its forearm, palm, thumb, and fingers match the left hand's visual weight
+          const rightBlend = Math.max(0, Math.min(1, (clampedU - 0.46) / 0.1));
+          const gamma = 0.66 - rightBlend * 0.24; // 0.66 left -> 0.42 right
+          const sideGain = 1.24 + rightBlend * 0.26;
+          // Threshold tiny background noise (<0.025) before boosting right shadows
+          const cleanLum = lum < 0.025 ? 0 : lum;
+          heroLuma[idx] = Math.pow(cleanLum, gamma) * sideGain;
         }
       }
     };
@@ -360,12 +368,12 @@ export function HalftoneCanvas({
                 0.24 * Math.sin(Math.abs(nx - 0.5) * 8.5 + t * 2.2 - ny * 1.2);
 
               const centerDist = isPortraitHero
-                ? Math.hypot((nx - 0.5) * 1.85, (ny - 0.42) * 1.75)
+                ? Math.hypot((nx - 0.5) * 1.6, (ny - 0.41) * 1.8)
                 : Math.hypot((nx - 0.5) * 1.55, (ny - 0.48) * 1.85);
-              const centerMask = Math.min(1, (isPortraitHero ? 0.32 : 0.46) + centerDist * 1.15);
+              const centerMask = Math.min(1, (isPortraitHero ? 0.38 : 0.46) + centerDist * 1.15);
 
               // Keep hands bold and luminous on mobile while keeping text legible
-              const handBoost = isPortraitHero ? 1.38 : 1.12;
+              const handBoost = isPortraitHero ? 1.42 : 1.12;
               intensity =
                 Math.max(handDetail * handBoost, ambientMist) *
                 inwardWave *
