@@ -115,12 +115,11 @@ export function HalftoneCanvas({
             const scale = imgAspect / canvasAspect;
             v = 0.5 + (ny - 0.5) * scale;
           } else {
-            // Keep both left and right hands bold and pointing horizontally toward each other
-            // across desktop, tablet, and smartphone viewports
-            const uSpan = isPortrait ? 0.54 : Math.max(0.76, canvasAspect / imgAspect);
+            // Show BOTH full wrists, palms, and pointing hands horizontally on mobile & tablet
+            const uSpan = isPortrait ? 0.94 : Math.max(0.76, canvasAspect / imgAspect);
             const dvPerNy =
-              uSpan * (imgAspect / Math.max(0.25, canvasAspect)) * (isPortrait ? 0.78 : 1);
-            const vCenterOffset = isPortrait ? 0.41 : 0.5;
+              uSpan * (imgAspect / Math.max(0.25, canvasAspect)) * (isPortrait ? 0.56 : 1);
+            const vCenterOffset = isPortrait ? 0.36 : 0.5;
             u = 0.5 + (nx - 0.5) * uSpan;
             v = 0.5 + (ny - vCenterOffset) * dvPerNy;
           }
@@ -151,25 +150,27 @@ export function HalftoneCanvas({
       spacing =
         variant === "hero"
           ? isMobile
-            ? 8.5
+            ? 5.6
             : isTablet
-              ? 8
+              ? 6.5
               : 7
           : variant === "fade-dark"
             ? isMobile
-              ? 9
+              ? 7.5
               : 8
             : isMobile
-              ? 8.5
+              ? 7
               : 7.5;
       maxRadius =
         variant === "hero"
           ? isMobile
-            ? 3.3
-            : 3.15
+            ? 2.35
+            : isTablet
+              ? 2.75
+              : 3.15
           : variant === "fade-dark"
-            ? 3.4
-            : 3.0;
+            ? 3.0
+            : 2.85;
 
       cols = Math.ceil(width / spacing) + 1;
       rows = Math.ceil(height / spacing) + 1;
@@ -349,20 +350,24 @@ export function HalftoneCanvas({
                 handDetail = top + (bot - top) * fy;
               }
 
-              const skyBand = Math.max(0.28, Math.abs(ny - 0.48) * 1.65);
-              const ambientMist = n * 0.72 * skyBand;
+              const skyBand = isPortraitHero
+                ? Math.max(0.18, Math.pow(Math.abs(ny - 0.48) * 1.95, 1.1))
+                : Math.max(0.28, Math.abs(ny - 0.48) * 1.65);
+              const ambientMist = n * (isPortraitHero ? 0.96 : 0.72) * skyBand;
               // Energy pulse flowing from both wrists inward toward the reaching fingertips
               const inwardWave =
                 0.78 +
                 0.24 * Math.sin(Math.abs(nx - 0.5) * 8.5 + t * 2.2 - ny * 1.2);
 
               const centerDist = isPortraitHero
-                ? Math.hypot((nx - 0.5) * 1.4, (ny - 0.43) * 1.6)
+                ? Math.hypot((nx - 0.5) * 1.85, (ny - 0.42) * 1.75)
                 : Math.hypot((nx - 0.5) * 1.55, (ny - 0.48) * 1.85);
-              const centerMask = Math.min(1, 0.46 + centerDist * 1.1);
+              const centerMask = Math.min(1, (isPortraitHero ? 0.32 : 0.46) + centerDist * 1.15);
 
+              // Keep hands bold and luminous on mobile while keeping text legible
+              const handBoost = isPortraitHero ? 1.38 : 1.12;
               intensity =
-                Math.max(handDetail * 1.12, ambientMist) *
+                Math.max(handDetail * handBoost, ambientMist) *
                 inwardWave *
                 centerMask *
                 scrollFade;

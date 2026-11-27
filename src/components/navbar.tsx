@@ -102,23 +102,22 @@ export function Navbar() {
           })}
         </div>
 
-        {/* Right CTA */}
-        <div className="hidden items-center md:flex">
+        {/* Right CTA + Mobile menu trigger */}
+        <div className="flex items-center gap-2">
           <RollButton href="/onboarding" variant="primary" size="sm">
             Get started
           </RollButton>
-        </div>
 
-        {/* Mobile menu trigger */}
-        <button
-          type="button"
-          onClick={() => setMobileOpen((prev) => !prev)}
-          aria-expanded={mobileOpen}
-          aria-label={mobileOpen ? "Close menu" : "Open menu"}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-[3px] border border-white/15 bg-white/[0.04] text-white md:hidden"
-        >
-          {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-        </button>
+          <button
+            type="button"
+            onClick={() => setMobileOpen((prev) => !prev)}
+            aria-expanded={mobileOpen}
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            className="inline-flex h-[38px] w-[38px] items-center justify-center rounded-[3px] border border-white/15 bg-white/[0.04] text-white md:hidden"
+          >
+            {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          </button>
+        </div>
       </nav>
 
       {/* Mobile drawer */}
@@ -136,16 +135,6 @@ export function Navbar() {
                 <span className="font-mono text-xs text-[#60a5fa]">+</span>
               </Link>
             ))}
-          </div>
-          <div className="mt-3 border-t border-white/10 pt-3">
-            <RollButton
-              href="/onboarding"
-              variant="primary"
-              size="md"
-              className="w-full"
-            >
-              Get started
-            </RollButton>
           </div>
         </div>
       )}

@@ -83,10 +83,10 @@ export function ServiceTimeline() {
 
         {/* Timeline */}
         <div ref={trackRef} className="relative">
-          {/* Central vertical dotted spine (desktop) */}
+          {/* Central vertical dotted spine (left rail on mobile/tablet, centered on desktop) */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute bottom-4 left-1/2 top-4 hidden w-px -translate-x-1/2 lg:block"
+            className="pointer-events-none absolute bottom-4 left-2 top-4 w-px lg:left-1/2 lg:-translate-x-1/2"
           >
             <div className="timeline-spine h-full w-full" />
             <div
@@ -101,7 +101,7 @@ export function ServiceTimeline() {
             />
           </div>
 
-          <div className="space-y-12 lg:space-y-16">
+          <div className="space-y-10 pl-8 sm:space-y-12 sm:pl-10 lg:space-y-16 lg:pl-0">
             {SERVICES.map((service, idx) => {
               const Icon = SERVICE_ICONS[service.slug];
               const isRight = idx % 2 === 0;

@@ -32,13 +32,13 @@ export default function HomePage() {
         />
 
         <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center text-center">
-          <h1 className="font-serif text-[clamp(2.8rem,8.4vw,6.4rem)] font-normal leading-[0.95] tracking-[-0.025em] text-white">
+          <h1 className="font-serif text-[clamp(2.95rem,8.4vw,6.4rem)] font-normal leading-[0.95] tracking-[-0.025em] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)]">
             Automate the
             <br />
             <span className="italic">busywork</span>
           </h1>
 
-          <p className="mt-5 max-w-md text-[15px] leading-relaxed text-zinc-300 sm:mt-6 sm:text-[16.5px]">
+          <p className="mt-5 max-w-md text-[15px] leading-relaxed text-zinc-200 drop-shadow-[0_2px_14px_rgba(0,0,0,0.95)] sm:mt-6 sm:text-[16.5px]">
             Morrow &amp; Co. turns repetitive operations into{" "}
             <strong className="font-semibold text-white">AI workflows</strong>,{" "}
             <strong className="font-semibold text-white">SaaS apps</strong>, and{" "}
@@ -46,7 +46,7 @@ export default function HomePage() {
             built for India and the world.
           </p>
 
-          <div className="mt-7 flex w-full max-w-xs flex-col items-stretch justify-center gap-3 sm:mt-8 sm:max-w-none sm:flex-row sm:items-center">
+          <div className="mt-7 flex flex-row flex-wrap items-center justify-center gap-3 sm:mt-8">
             <RollButton href="/onboarding" variant="white" size="md">
               Start onboarding
             </RollButton>
